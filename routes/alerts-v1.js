@@ -14,20 +14,23 @@ router.use((req, res, next) => {
   next()
 })
 
-/* Find alert by ID */
-router.get('/', function (req, res, next) {
+/* Display all alerts (not asked, test)*/
+router.get('/', async function  (req, res, next) {
   res
     .status(200)
-    .json(
-      alertsModel.getAll()
-   )
+    .json({
+      alertes : await alertsModel.getAll()
+    })
 })
 
-router.get('/add', function (req, res, next) {
-  alertsModel.add()
+// Just for test
+router.get('/add', async function (req, res, next) {
+  await alertsModel.add()
   res
     .status(200)
-    .json(alertsModel.getAll())
+    .json({
+
+    })
 })
 
 /* Find alert by ID */
