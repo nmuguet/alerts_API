@@ -12,6 +12,7 @@ app.use(bodyParser.json())
 // Activation de Helmet
 app.use(helmet({noSniff: true}))
 
+
 // On injecte le model dans les routers. Ceci permet de supprimer la dépendance
 // directe entre les routers et le modele
 app.use('/alerts', alertsRouter(alertsModel))

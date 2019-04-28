@@ -18,9 +18,17 @@ router.use((req, res, next) => {
 router.get('/', function (req, res, next) {
   res
     .status(200)
-    .json({ message: 'Juste pour tester. Si ça s\'affiche, la base fonctionne' })
+    .json(
+      alertsModel.getAll()
+   )
 })
 
+router.get('/add', function (req, res, next) {
+  alertsModel.add()
+  res
+    .status(200)
+    .json(alertsModel.getAll())
+})
 
 /* Find alert by ID */
 router.get('/:id', function (req, res, next) {

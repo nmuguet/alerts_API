@@ -10,16 +10,8 @@
     "test-coverage": "nyc --reporter=lcov  npm test",
     "test-report": "npm run test-coverage && nyc report"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stfanmichel/ESIR-TP5.git"
-  },
-  "author": "Stéphane Michel",
+  "author": "kheav Kevin & Muguet Nicolas",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/stfanmichel/ESIR-TP5/issues"
-  },
-  "homepage": "https://github.com/stfanmichel/ESIR-TP5#readme",
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
@@ -32,7 +24,7 @@
     "express": "^4.16.4",
     "helmet": "^3.15.1",
     "jsonwebtoken": "^8.4.0",
-    "tcomb": "^3.2.29",
+    "mongodb": "^3.2.3",
     "uuid": "^3.3.2"
   }
 }
