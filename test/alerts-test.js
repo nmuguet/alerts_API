@@ -13,6 +13,10 @@ describe('Alerts tests', () => {
             .request(app)
             .get('/alerts/1234')
             .end((err, res) => {
+                res
+                .should
+                .have
+                .status(200)
 
                 done()
             })
