@@ -1,8 +1,8 @@
-const MongoClient = require('mongodb').MongoClient
+const mongoose = require('mongoose');
 const tcomb = require('tcomb')
-const config = require('config')
-const { ObjectId } = require('mongodb')
 
+
+//Still usefull ?
 const ALERT = tcomb.struct({
     type: tcomb.enums({ 'weather': 'weather', 'sea': 'sea', 'transport': 'transport' }, 'type'),
     label: tcomb.String,
@@ -11,14 +11,32 @@ const ALERT = tcomb.struct({
     to: tcomb.String
 }, { strict: true })
 
-let alerts
-MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true }, function(err, client) {
-    if (err) { throw err }
-    let database = client.db("alertsDB");
-    alerts = database.collection("alerts");
-});
 
-let alertTest = {
+const alerts = mongoose.model('Alert', {
+    type: {
+        type: String,
+        required: true
+    },
+    label: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true
+    },
+    from: {
+        type: String,
+        required: true
+    },
+    to: {
+        type: String,
+        required: true
+    }
+})
+
+//For test
+const alertTest = {
     type: 'weather',
     label: "alerte de test",
     status: 'risk',
@@ -26,47 +44,89 @@ let alertTest = {
     to: 'monday'
 }
 
-//Si on charge la page trop vite après avoir démarré
-//le find se lance alors que alert est encore undefined
-
-const getAll = () => {
-    return alerts.find().toArray()
+//Not asked, just for test
+const getAll = async () => {
+    try {
+        return await alerts.find()
+    } catch (exc) { console.log(exc) }
 }
 
-const get = async(id) => {
-    const obj_id = ObjectId(id)
-    return await alerts.find({ _id: obj_id }).toArray()
+//Return a single alert by Id
+const getById = async (id) => {
+    try {   
+        return await alerts.findById(id)
+    } catch (exc) { console.log(exc) }
 }
 
-const add = async(alert) => {
+//Return alert(s) by criteria
+// Doc mongoDB : The $in operator selects the documents where the value of a field equals any value in the specified array
+const getByCriteria = async (criterias) => {
+    try {
+        return await alerts.find({ status: { "$in": criterias } })
+    } catch (exc) { console.log(exc) }
+}
+
+//Add a alert
+const add = async (alert) => {
     if (await validateAlert(alert)) {
-        console.log('We added :')
-        console.log(alert)
-        alerts.insertOne(alert),
-            function(err, res) {
-                if (err) { throw err }
+        console.log("validated")
+        const newAlert = new alerts(alert)
+        await newAlert.save(function (err) {
+            if (err) {
+                console.log('Alert NOT added')
+                return handleError(err);
             }
+            console.log('Alert added')
+        });
+        return newAlert
     } else {
-        console.log('Error with :')
-        console.log(alert)
-        throw new Error('alert.not.valid')
+        throw new Error('Invalid input')
     }
 }
 
+
+//Update a alerts
+const update = async (id, newProperties) => {
+    if (await validateAlert(newProperties)) {
+        console.log("validated")
+        try {
+            const UpdatedAlert = await alerts.findByIdAndUpdate(id, newProperties, { new: true })
+            return UpdatedAlert
+        } catch (exc) {
+            console.log('Alert NOT updated')
+            console.log(exc)
+            throw new Error('Invalid input')
+        }
+    } else {
+        console.log("NOT validated")
+        throw new Error('Invalid input')
+    }
+}
+
+const remove = async (id) => {
+    try {
+       return removedAlert = await alerts.findByIdAndRemove(id)
+    } catch (exc) { console.log(exc) }
+}
+
+
+//To check if an alert format is valid
 function validateAlert(alert) {
     let result = false
-        /* istanbul ignore else */
+    /* istanbul ignore else */
     try {
         const tcombUser = ALERT(alert)
         result = true
     } catch (exc) {
         result = false
     }
-
     return result
 }
 
 
 exports.getAll = getAll
 exports.add = add
-exports.get = get
+exports.getById = getById
+exports.getByCriteria = getByCriteria
+exports.update = update
+exports.remove = remove
