@@ -126,7 +126,7 @@ describe('Alerts tests', () => {
     it('should list alerts corresponding to MULTIPLES CRITERIAS on /alerts/search GET', done => {
         chai
             .request(app)
-            .get('/alerts/search?status=warning,threat')
+            .get('/alerts/search?status=threat,warning')
             .end((err, res) => {
                 res
                     .should
@@ -150,7 +150,7 @@ describe('Alerts tests', () => {
     it('(WRONG TAG) should return a invalid tag error on /alerts/search GET', done => {
         chai
             .request(app)
-            .get('/alerts/search?wrongTag=warning,threat')
+            .get('/alerts/search?wrongTag=threat,warning')
             .end((err, res) => {
                 res
                     .should
@@ -289,25 +289,6 @@ describe('Alerts tests', () => {
             })
     })
 
-    it('should add a SINGLE alert on /alerts POST', done => {
-        chai
-            .request(app)
-            .post('/alerts')
-            .send({ type: 'transport', label: 'chai alert', status: 'warning', from: 'saturday', to: 'sunday' })
-            .end((err, res) => {
-                res
-                    .should
-                    .have
-                    .status(200)
-                res.should.be.json
-                res
-                    .body
-                    .should
-                    .be
-                    .a('object')
-                done()
-            })
-    })
 
     it('should add a INVALID alert on /alerts POST', done => {
         chai
