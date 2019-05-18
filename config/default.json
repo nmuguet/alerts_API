@@ -1,4 +1,5 @@
 {
+    "secret": "kevinetnicolas",
 
     "dbConfig": {
         "host": "localhost",

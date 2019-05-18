@@ -135,10 +135,8 @@ router.delete('/:id', async function (req, res) {
     const id = req.params.id
     console.log("removing " + id)
     if (id && id.length === ID_LENGTH) {
-        console.log(id.length)
         try {
             const alert = await alertsModel.remove(id)
-            console.log(alert)
             if (alert) {
                 res
                     .status(200)

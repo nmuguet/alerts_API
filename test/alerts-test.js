@@ -5,8 +5,7 @@ const { app } = require('../app')
 chai.should()
 chai.use(chaiHttp)
 
-//CORRIGER DONE ?
-
+let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgxODE2OTMsInVzZXJuYW1lIjoiamVzc2UiLCJpYXQiOjE1NTgxNzgwOTN9.BVx9S3oyxRZYnbRUZB7YtyIDYTO0JxaKjdXwKLULv3M"
 
 describe('Alerts tests', () => {
 
@@ -14,11 +13,50 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/all')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 const id = res.body.alertes[0]._id
                 chai
                     .request(app)
                     .get('/alerts/' + id)
+                    .set('Authorization', `bearer ${token}`)
+                    .end((err, res) => {
+                        res
+                            .should
+                            .have
+                            .status(200)
+                        res.should.be.json
+                        res
+                            .body
+                            .should
+                            .be
+                            .a('object')
+                        res
+                            .body
+                            .should
+                            .have
+                            .property('_id')
+                        res
+                            .body
+                            ._id
+                            .should
+                            .equal(id)
+                        done()
+                    })
+            })
+    })
+
+    it('should list a SINGLE alerts on /alerts/<id> GET', done => {
+        chai
+            .request(app)
+            .get('/alerts/all')
+            .set('Authorization', `bearer ${token}`)
+            .end((err, res) => {
+                const id = res.body.alertes[0]._id
+                chai
+                    .request(app)
+                    .get('/alerts/' + id)
+                    .set('Authorization', `bearer ${token}`)
                     .end((err, res) => {
                         res
                             .should
@@ -49,6 +87,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/wrongIdFormat')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -73,6 +112,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/5cd4284496acd8inexistant')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -98,6 +138,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/search?status=threat')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -127,6 +168,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/search?status=threat,warning')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -151,6 +193,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/search?wrongTag=threat,warning')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -175,6 +218,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/search?status=')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -199,6 +243,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/search')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -223,6 +268,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .post('/alerts')
+            .set('Authorization', `bearer ${token}`)
             .send({ type: 'transport', label: 'chai alert', status: 'threat', from: 'saturday', to: 'sunday' })
             .end((err, res) => {
                 res
@@ -294,6 +340,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .post('/alerts')
+            .set('Authorization', `bearer ${token}`)
             .send({ type: 'sea', label: 'Invalid chai alert', wrongParam: 'threat', from: 'saturday', to: 'sunday' })
             .end((err, res) => {
                 res.should.be.json
@@ -314,6 +361,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .post('/alerts')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res.should.be.json
                 res
@@ -333,14 +381,15 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/all')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 const id = res.body.alertes[0]._id
                 chai
                     .request(app)
                     .put('/alerts/' + id)
+                    .set('Authorization', `bearer ${token}`)
                     .send({ type: 'transport', label: 'chai updated alert', status: 'threat', from: 'saturday', to: 'sunday' })
                     .end((err, res) => {
-                        console.log(res.body)
                         res
                             .should
                             .have
@@ -375,11 +424,13 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/all')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 const id = res.body.alertes[0]._id
                 chai
                     .request(app)
                     .put('/alerts/' + id)
+                    .set('Authorization', `bearer ${token}`)
                     .send({ type: 'sea', label: 'Invalid chai alert', wrongParam: 'threat', from: 'saturday', to: 'sunday' })
                     .end((err, res) => {
                         res.should.be.json
@@ -397,6 +448,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .put('/alerts/5cd4287fbe6ababaaaaaaabb')
+            .set('Authorization', `bearer ${token}`)
             .send({ type: 'transport', label: 'chai updated alert', status: 'threat', from: 'saturday', to: 'sunday' })
             .end((err, res) => {
                 res.should.be.json
@@ -412,11 +464,13 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .get('/alerts/all')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 const id = res.body.alertes[1]._id
                 chai
                     .request(app)
                     .delete('/alerts/' + id)
+                    .set('Authorization', `bearer ${token}`)
                     .end((err, res) => {
                         res
                             .should
@@ -431,6 +485,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .delete('/alerts/5cd4287fbe6ababaaaaaaaaa')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -444,6 +499,7 @@ describe('Alerts tests', () => {
         chai
             .request(app)
             .delete('/alerts/bad')
+            .set('Authorization', `bearer ${token}`)
             .end((err, res) => {
                 res
                     .should
@@ -452,4 +508,5 @@ describe('Alerts tests', () => {
                 done()
             })
     })
+
 })
